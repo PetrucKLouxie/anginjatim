@@ -1,0 +1,9 @@
+streamlit
+pandas
+requests
+plotly
+pydeck
+python-dotenv
+streamlit-autorefresh
+streamlit-echarts
+numpy
