@@ -467,6 +467,8 @@ def get_weather(lat, lon):
     except:
         return 0, 0
 
+st.write(data)
+
 # =============================
 # RECORD TO GITHUB
 # =============================
