@@ -452,13 +452,20 @@ with st.sidebar:
 # FUNCTION GET WEATHER
 # =============================
 
-def get_weather(lat,lon):
-    url=f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
-    r=requests.get(url)
-    data=r.json()
-    wind_speed=data["wind"]["speed"]
-    wind_deg=data["wind"]["deg"]
-    return wind_speed,wind_deg
+def get_weather(lat, lon):
+    try:
+        url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+        r = requests.get(url, timeout=10)
+        data = r.json()
+
+        wind = data.get("wind", {})
+        speed = wind.get("speed", 0)
+        deg = wind.get("deg", 0)
+
+        return speed, deg
+
+    except:
+        return 0, 0
 
 # =============================
 # RECORD TO GITHUB
