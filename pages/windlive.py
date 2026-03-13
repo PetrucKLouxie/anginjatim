@@ -219,12 +219,6 @@ c1,c2,c3 = st.columns([1,2,1])
 
 with c2:
 
-    st.markdown(f"""
-    <div class="glass-card">
-    <h2 style="text-align:center">📍 {selected['city']}</h2>
-    </div>
-    """, unsafe_allow_html=True)
-
     if selected["speed_kt"] > 20:
         st.warning("⚠ Strong wind detected")
 
