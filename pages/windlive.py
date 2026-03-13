@@ -243,12 +243,6 @@ for i in range(0,len(cities),6):
 
         with cols[j]:
 
-            st.markdown(f"""
-            <div class="glass-card">
-            <h4 style="text-align:center">{row['city']}</h4>
-            </div>
-            """, unsafe_allow_html=True)
-
             if st.button(row["city"], key=f"btn_{row['city']}", use_container_width=True):
 
                 st.session_state.selected_city = row["city"]
