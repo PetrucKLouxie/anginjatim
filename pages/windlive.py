@@ -165,7 +165,7 @@ def wind_compass(speed, deg, size=200):
                 },
 
                 "detail":{
-                    "formatter":f"{speed:.1f} kt\\n{status}",
+                    "formatter":f"{speed:.1f} kt",
                     "fontSize":16,
                     "offsetCenter":[0,"60%"],
                     "color":"white"
