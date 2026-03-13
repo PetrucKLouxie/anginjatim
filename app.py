@@ -463,9 +463,6 @@ def get_weather(lat, lon):
     deg = wind.get("deg", 0)
 
     return speed, deg
-    except:
-        return 0, 0
-
 # =============================
 # RECORD TO GITHUB
 # =============================
