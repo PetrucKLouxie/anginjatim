@@ -9,7 +9,6 @@ import time
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 CSV_FILE = os.path.join(BASE_DIR, "wind_history.csv")
 
-df = pd.read_csv(CSV_FILE)
 st_autorefresh(interval=600000, key="windlive")
 
 st.set_page_config(page_title="Live Wind Monitor", layout="wide")
@@ -190,15 +189,26 @@ with nav4:
 # =============================
 
 with st.spinner('📊 Loading wind data...'):
-    df = pd.read_csv(CSV_FILE)
+    if not os.path.exists(CSV_FILE):
+        st.error("Data wind_history.csv belum tersedia")
+        st.stop()
+        
+df = pd.read_csv(CSV_FILE)
 
-df["time"] = pd.to_datetime(df["time"], errors="coerce")
-df["speed_kt"] = pd.to_numeric(df["speed_kt"], errors="coerce")
-df["deg"] = pd.to_numeric(df["deg"], errors="coerce")
+@st.cache_data(ttl=600)
+def load_data():
+    df = pd.read_csv(CSV_FILE)
+    df["time"] = pd.to_datetime(df["time"], errors="coerce")
+    df["speed_kt"] = pd.to_numeric(df["speed_kt"], errors="coerce")
+    df["deg"] = pd.to_numeric(df["deg"], errors="coerce")
+    df = df.dropna(subset=["city","speed_kt","deg"])
+    return df
+
+df = load_data()
 
 df = df.dropna(subset=["city","speed_kt","deg"])
 
-df = df.sort_values("time").groupby("city").tail(1)
+df = df.sort_values("time").groupby("city", as_index=False).last()
 
 # =========================
 # COMPASS FUNCTION
@@ -207,19 +217,21 @@ df = df.sort_values("time").groupby("city").tail(1)
 def wind_compass(speed, deg, size=200, city_name=""):
     
     # Determine color based on speed
-    if speed < 3:
-        color = "#00d2ff"  # Blue - light
+    if speed < 5:
+        color = "#00d2ff"
+        status = "Calm"
+    elif speed < 10:
+        color = "#00ff88"
         status = "Light"
-    elif speed < 7:
-        color = "#00ff88"  # Cyan - moderate
+    elif speed < 20:
+        color = "#ffaa00"
         status = "Moderate"
-    elif speed < 12:
-        color = "#ffaa00"  # Yellow - strong
-        status = "Strong"
     else:
-        color = "#ff5555"  # Red - very strong
-        status = "Very Strong"
-
+        color = "#ff5555"
+        status = "Strong"
+    if selected["speed_kt"] > 20:
+    st.warning("⚠ Strong wind detected")
+    
     direction_formatter = JsCode("""
     function (value) {
         const dir = {
@@ -232,7 +244,7 @@ def wind_compass(speed, deg, size=200, city_name=""):
             270:"W",
             315:"NW"
         };
-        return dir[Math.round(value/45)*45] || "";
+        return dir[Math.round(value/45)*45 % 360] || "";
     }
     """)
 
@@ -373,6 +385,9 @@ if "selected_city" not in st.session_state:
     st.session_state.selected_city = df.iloc[0]["city"]
 
 selected = df[df["city"] == st.session_state.selected_city].iloc[0]
+if df.empty:
+    st.warning("Tidak ada data angin tersedia")
+    st.stop()
 
 # =========================
 # BIG COMPASS CENTER
