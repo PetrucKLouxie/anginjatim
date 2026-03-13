@@ -350,8 +350,14 @@ st.markdown("<br>", unsafe_allow_html=True)
 # TIME SLIDER
 # =============================
 
-times = data["time"].drop_duplicates().sort_values()
+times = data["time"].drop_duplicates().sort_values().tolist()
 
+selected_time = st.select_slider(
+    "Pilih waktu untuk melihat kondisi angin",
+    options=times,
+    value=times[-1],
+    format_func=lambda x: x.strftime("%Y-%m-%d %H:%M")
+)
 if len(times) == 0:
     st.warning("⚠️ Tidak ada data waktu")
     st.stop()
