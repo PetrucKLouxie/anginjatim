@@ -452,18 +452,17 @@ with st.sidebar:
 # FUNCTION GET WEATHER
 # =============================
 
+@st.cache_data(ttl=60)
 def get_weather(lat, lon):
-    try:
-        url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
-        r = requests.get(url, timeout=10)
-        data = r.json()
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+    r = requests.get(url, timeout=10)
+    data = r.json()
 
-        wind = data.get("wind", {})
-        speed = wind.get("speed", 0)
-        deg = wind.get("deg", 0)
+    wind = data.get("wind", {})
+    speed = wind.get("speed", 0)
+    deg = wind.get("deg", 0)
 
-        return speed, deg
-
+    return speed, deg
     except:
         return 0, 0
 
@@ -483,7 +482,10 @@ def record_to_github(df):
     lines = content.split("\n")
     now = datetime.utcnow()
     rounded = now.replace(minute=(now.minute // 10) * 10, second=0, microsecond=0)
-    last_time = lines[-1].split(",")[0] if len(lines) > 1 else None
+    if len(lines) > 1:
+        last_time = lines[-1].split(",")[0]
+    else:
+        last_time = None
     if str(rounded) in last_time:
         return
     new_rows = ""
@@ -591,15 +593,21 @@ else:
 
 df_station = pd.DataFrame(stations)
 df_wind = pd.DataFrame(data_list)
-df = df_station.merge(df_wind, left_on="name", right_on="city", how="left")
-df = df.rename(columns={"lat_x": "lat", "lon_x": "lon", "speed": "speed_kt"})
 
+df = df_station.merge(df_wind, left_on="name", right_on="city", how="left")
+
+df["speed_kt"] = (df["speed"] * 1.94384).round(1)
+
+df = df.rename(columns={
+    "lat_x":"lat",
+    "lon_x":"lon"
+})
 # Animated wind vectors
 t = time.time()
 scale = 0.08
 
-df["lat2"] = df["lat"] + np.sin(np.radians(df["deg"])) * scale
-df["lon2"] = df["lon"] + np.cos(np.radians(df["deg"])) * scale
+df["lat2"] = df["lat"] + np.cos(np.radians(df["deg"])) * scale
+df["lon2"] = df["lon"] + np.sin(np.radians(df["deg"])) * scale
 
 # Add some animation
 df["lat2"] += np.sin(t) * 0.015
@@ -693,7 +701,7 @@ deck = pdk.Deck(
 )
 
 # Auto refresh for wind animation
-st_autorefresh(interval=5000, key="wind_refresh")
+st_autorefresh(interval=10000)
 
 st.pydeck_chart(deck)
 
@@ -756,16 +764,17 @@ with col_chart2:
     )
     
     # Polar/Wind Rose chart
+    rose_data = df.groupby("direction").size().reset_index(name="count")
+
     rose = px.bar_polar(
-        df,
-        r="speed_kt",
+        rose_data,
+        r="count",
         theta="direction",
-        color="speed_kt",
-        title="Wind Rose - Direction Distribution",
-        color_continuous_scale="Turbo",
-        template=plotly_template
+        title="Wind Rose - Direction Frequency",
+        template=plotly_template,
+        color="count",
+        color_continuous_scale="Turbo"
     )
-    
     rose.update_layout(
         polar=dict(
             bgcolor="rgba(0,0,0,0)",
