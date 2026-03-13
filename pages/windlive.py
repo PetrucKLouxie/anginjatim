@@ -303,7 +303,7 @@ def wind_compass(speed, deg, size=200, city_name=""):
                     "length":"75%",
                     "width":6,
                     "itemStyle": {
-                        "color": """ + f'"{color}"' + """
+                        "color": color
                     }
                 },
 
@@ -317,13 +317,12 @@ def wind_compass(speed, deg, size=200, city_name=""):
                     }
                 },
 
-                "detail":{
-                    "formatter":f""" + f'"{speed:.1f} kt\\n{status}"' + """,
-                    "fontSize":18,
-                    "offsetCenter":[0,"60%"],
+               "detail": {
+                    "formatter": f"{speed:.1f} kt\n{status}",
+                    "fontSize": 18,
+                    "offsetCenter": [0, "60%"],
                     "color": "#ffffff"
                 },
-
                 "data":[{"value":float(deg)}],
                 "title": {
                     "show": True,
