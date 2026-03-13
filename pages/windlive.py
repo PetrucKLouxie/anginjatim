@@ -6,6 +6,185 @@ import os
 
 st.set_page_config(page_title="Live Wind Monitor", layout="wide")
 
+st.markdown("""
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+<style>
+
+/* ===== GLOBAL STYLES ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* sembunyikan menu pages default */
+[data-testid="stSidebarNav"] {
+display:none;
+}
+
+/* ===== MAIN BACKGROUND ===== */
+.stApp{
+background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+color: white;
+min-height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+[data-testid="stSidebar"]{
+background: linear-gradient(180deg, rgba(15,12,41,0.95) 0%, rgba(48,43,99,0.95) 100%);
+border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ===== BUTTONS ===== */
+div.stButton > button {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color: white;
+border-radius: 12px;
+padding: 10px 20px;
+font-weight: 600;
+border: none;
+transition: all 0.3s ease;
+box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+div.stButton > button:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* ===== METRIC CARDS - GLASSMORPHISM ===== */
+[data-testid="stMetric"] {
+background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+padding: 20px;
+border-radius: 16px;
+border: 1px solid rgba(255,255,255,0.1);
+backdrop-filter: blur(10px);
+box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+transition: all 0.3s ease;
+}
+
+[data-testid="stMetric"]:hover {
+transform: translateY(-5px);
+box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+/* ===== CUSTOM CARDS ===== */
+.glass-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* ===== TITLE STYLING ===== */
+h1 {
+    background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== HOVER EFFECTS ===== */
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* ===== INPUT STYLING ===== */
+div[data-testid="stSelectbox"] > div,
+div[data-testid="stDateInput"] > div {
+    background: rgba(255,255,255,0.05) !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+/* ===== SLIDER STYLING ===== */
+div[data-testid="stSlider"] {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+/* ===== DATAFRAME ===== */
+[data-testid="stDataFrame"]{
+background:rgba(255,255,255,0.02);
+border-radius:10px;
+}
+
+/* ===== EXPANDER ===== */
+streamlit-expander {
+    background: rgba(255,255,255,0.05) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+/* ===== CUSTOM SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+
+/* ===== PLOTLY CHARTS ===== */
+.js-plotly-plot .plotly .main-svg {
+    background: transparent !important;
+}
+
+/* ===== WARNING & INFO BOXES ===== */
+div[data-testid="stWarning"],
+div[data-testid="stInfo"] {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    border-left: 4px solid #00d2ff;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
 # =========================
 # PATH
 # =========================
