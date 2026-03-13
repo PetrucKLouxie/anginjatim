@@ -352,33 +352,17 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 times = data["time"].drop_duplicates().sort_values().tolist()
 
-selected_time = st.select_slider(
-    "Pilih waktu untuk melihat kondisi angin",
-    options=times,
-    value=times[-1],
-    format_func=lambda x: x.strftime("%Y-%m-%d %H:%M")
-)
-if len(times) == 0:
-    st.warning("⚠️ Tidak ada data waktu")
-    st.stop()
-
-elif len(times) == 1:
-    selected_time = times[0]
-    st.info(f"ℹ️ Hanya ada satu waktu data: {selected_time}")
-
-else:
-    st.markdown("""
-    <div class="glass-card fade-in" style="padding: 15px;">
-        <h4 style="margin: 0 0 10px 0;">⏱️ Time Explorer</h4>
-    </div>
-    """, unsafe_allow_html=True)
-    
+if len(times) > 1:
     selected_time = st.select_slider(
-        "Pilih waktu untuk melihat kondisi angin",
+        "Pilih waktu",
         options=times,
         value=times[-1],
+        key="time_slider",
         format_func=lambda x: x.strftime("%Y-%m-%d %H:%M")
     )
+else:
+    selected_time = times[0]
+    
 
 snapshot = data.loc[data["time"].eq(selected_time)]
 
