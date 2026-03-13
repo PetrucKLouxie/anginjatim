@@ -180,6 +180,16 @@ div[data-testid="stInfo"] {
     border-radius: 10px;
     border-left: 4px solid #00d2ff;
 }
+/* CSS Anda yang lain */
+
+/* sembunyikan tombol sidebar */
+[data-testid="collapsedControl"]{
+display:none;
+}
+
+.material-icons{
+display:none !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
