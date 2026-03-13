@@ -204,12 +204,11 @@ with nav2:
         st.switch_page("app.py")
 
 with nav3:
-    # Fixed self-reference nav - handled by app.py
+    st.write("")  # placeholder
 
-    with nav4:
-        if st.button("🧭 Wind Live", use_container_width=True):
-         st.switch_page("pages/windlive.py")
-
+with nav4:
+    if st.button("🧭 Wind Live", use_container_width=True):
+        st.switch_page("pages/windlive.py")
 # =============================
 # TITLE
 # =============================
@@ -267,9 +266,20 @@ with st.sidebar:
 
 with st.spinner('📊 Loading data...'):
     url = "https://raw.githubusercontent.com/PetrucKLouxie/anginjatim/main/wind_history.csv?t=" + str(time.time())
+    try:
+        df = pd.read_csv(url)
+    except:
+        st.error("❌ Gagal mengambil data dari GitHub")
+        st.stop()
+
+@st.cache_data(ttl=60)
+def load_data():
+    url = "https://raw.githubusercontent.com/PetrucKLouxie/anginjatim/main/wind_history.csv?t=" + str(time.time())
     df = pd.read_csv(url)
     df["time"] = pd.to_datetime(df["time"])
+    return df
 
+df = load_data()
 # =============================
 # FILTER
 # =============================
@@ -340,7 +350,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # TIME SLIDER
 # =============================
 
-times = sorted(data["time"].unique())
+times = data["time"].drop_duplicates().sort_values()
 
 if len(times) == 0:
     st.warning("⚠️ Tidak ada data waktu")
@@ -439,7 +449,7 @@ with col_chart2:
     
     # Direction categorization
     data["direction"] = pd.cut(
-        data["deg"],
+        data["deg"] % 360,
         bins=[0,45,90,135,180,225,270,315,360],
         labels=["N","NE","E","SE","S","SW","W","NW"],
         include_lowest=True
@@ -448,7 +458,7 @@ with col_chart2:
     # Speed class
     data["speed_class"] = pd.cut(
         data["speed_kt"],
-        bins=[0,5,10,15,20,50],
+        bins=[0,5,10,15,20,999],
         labels=["0-5","5-10","10-15","15-20",">20"]
     )
     
